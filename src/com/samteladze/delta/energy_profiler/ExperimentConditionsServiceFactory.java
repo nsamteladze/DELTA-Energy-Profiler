@@ -10,6 +10,12 @@ public class ExperimentConditionsServiceFactory {
 		switch (experimentType) {
 		case Idle:
 			return new IdleExperimentConditionsService();
+		case Screen:
+			return new ScreenExperimentConditionsService();
+		case CPU_Diff:
+			return new CPUDiffExperimentConditionsService();
+		case Net_4G:
+			return new Net4GExperimentConditionsService();
 		default:
 			MyLogger.LogError("Failed to instantiate experiment conditions service; experiment type was not found", 
 					ExperimentConditionsServiceFactory.class.toString());

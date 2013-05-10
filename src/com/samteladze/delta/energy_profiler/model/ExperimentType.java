@@ -4,5 +4,5 @@ public enum ExperimentType {
 	Idle,
 	Screen,
 	Net_4G,
-	Update_Diff
+	CPU_Diff
 }

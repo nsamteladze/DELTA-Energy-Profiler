@@ -7,6 +7,7 @@ import com.samteladze.delta.energy_profiler.model.ExperimentType;
 import com.samteladze.delta.energy_profiler.utils.ExperimentTypeNameHelper;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.content.Context;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class ExperimentActivity extends Activity {
 
@@ -72,8 +74,12 @@ public class ExperimentActivity extends Activity {
 	 
 		  @Override
 		  public void onClick(View v) {
+			  
+			  Toast.makeText(getApplicationContext(), Environment.getExternalStorageDirectory().toString(), Toast.LENGTH_SHORT).show();
 			  Experimenter.startExperiment(ExperimentType.values()[(int) spinnerChooseExperiment.getSelectedItemId()],
 					  							 getApplicationContext()); 
+			  
+			  
 		  }
 	 
 		});

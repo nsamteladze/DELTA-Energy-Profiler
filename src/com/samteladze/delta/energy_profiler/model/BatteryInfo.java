@@ -26,9 +26,9 @@ public class BatteryInfo {
 	}
 	
 	// Returns the current battery info with a time stamp
-	public static BatteryInfo current(Context contex) {
+	public static BatteryInfo current(Context context) {
 		// Get battery information
-		Intent batteryIntent = contex.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		Intent batteryIntent = context.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 		int rawlevel = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 		double scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, 0);
 		int voltage = batteryIntent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
