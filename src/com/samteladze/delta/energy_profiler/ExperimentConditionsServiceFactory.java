@@ -12,8 +12,8 @@ public class ExperimentConditionsServiceFactory {
 			return new IdleExperimentConditionsService();
 		case Screen:
 			return new ScreenExperimentConditionsService();
-		case CPU_Diff:
-			return new CPUDiffExperimentConditionsService();
+		case CPU_Zip:
+			return new CPUZipExperimentConditionsService();
 		case Net_4G:
 			return new Net4GExperimentConditionsService();
 		default:

@@ -34,8 +34,8 @@
             	 android:label="Idle Conditions" />
         <service android:name=".ScreenExperimentConditionsService" 
             	 android:label="Screen Conditions" />
-        <service android:name=".CPUDiffExperimentConditionsService" 
-            	 android:label="CPU Diff Conditions" />
+        <service android:name=".CPUZipExperimentConditionsService" 
+            	 android:label="CPU Zip Conditions" />
         <service android:name=".Net4GExperimentConditionsService" 
             	 android:label="Net 4G Conditions" />
         

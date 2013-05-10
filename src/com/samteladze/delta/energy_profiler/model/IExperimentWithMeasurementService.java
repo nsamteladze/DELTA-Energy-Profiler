@@ -4,5 +4,4 @@ package com.samteladze.delta.energy_profiler.model;
 // Implemented by the experiment options classes
 public interface IExperimentWithMeasurementService {
 	public long getTimeBetweenMeasurements();
-	public int getNumberOfMeasurements();
 }

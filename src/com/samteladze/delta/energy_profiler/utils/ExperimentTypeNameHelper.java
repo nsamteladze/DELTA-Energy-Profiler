@@ -20,8 +20,8 @@ public class ExperimentTypeNameHelper {
 		case Net_4G:
 			experimentName = "4G";
 			break;
-		case CPU_Diff:
-			experimentName = "CPU Diff";
+		case CPU_Zip:
+			experimentName = "CPU Zip";
 			break;
 		default:
 			experimentName = "Unknown";

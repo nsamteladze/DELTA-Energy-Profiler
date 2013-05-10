@@ -5,23 +5,21 @@ import java.util.List;
 
 import com.samteladze.delta.energy_profiler.model.ExperimentType;
 import com.samteladze.delta.energy_profiler.utils.ExperimentTypeNameHelper;
+import com.samteladze.delta.energy_profiler.utils.FileManager;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.app.Activity;
-import android.content.Context;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class ExperimentActivity extends Activity {
 
-	// TEMP
-	public static Context appContext;
+	private static Window _currentWindow = null;
 	
 	private Spinner spinnerChooseExperiment;
 	private Button buttonStartExperiment;
@@ -31,8 +29,8 @@ public class ExperimentActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// TEMP
-		appContext = getApplicationContext();
+		_currentWindow = this.getWindow();
+		FileManager.initialize();
 		
 		initializeUI();
 	}
@@ -74,10 +72,8 @@ public class ExperimentActivity extends Activity {
 	 
 		  @Override
 		  public void onClick(View v) {
-			  
-			  Toast.makeText(getApplicationContext(), Environment.getExternalStorageDirectory().toString(), Toast.LENGTH_SHORT).show();
 			  Experimenter.startExperiment(ExperimentType.values()[(int) spinnerChooseExperiment.getSelectedItemId()],
-					  							 getApplicationContext()); 
+					  							 getApplicationContext(), _currentWindow); 
 			  
 			  
 		  }

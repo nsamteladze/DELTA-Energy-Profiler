@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
-
 import com.samteladze.delta.energy_profiler.model.IExperimentConditionsService;
 import com.samteladze.delta.energy_profiler.utils.MyLogger;
 
@@ -24,11 +23,14 @@ public class ScreenExperimentConditionsService extends Service implements IExper
 		MyLogger.LogInfo("Started conditions service - SCREEN", ScreenExperimentConditionsService.class.getSimpleName());
 		
 		// Acquire the wake lock
-		PowerManager mgrPower = (PowerManager)getSystemService(Context.POWER_SERVICE);
+		PowerManager mgrPower = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = mgrPower.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wake Lock");
 		wakeLock.acquire();
 		
 		MyLogger.LogInfo("Acquired wake lock", ScreenExperimentConditionsService.class.getSimpleName());
+		
+		// Screen ON
+		Experimenter.setScreenOn();
 		
 	    return START_STICKY;
 	}
@@ -47,6 +49,9 @@ public class ScreenExperimentConditionsService extends Service implements IExper
     	wakeLock.release();
     	
     	MyLogger.LogInfo("Released wake lock", ScreenExperimentConditionsService.class.getSimpleName());
+    	
+    	// Set screen behavior back to normal
+    	Experimenter.setScreenNormal();
     	
         super.onDestroy();
     }
