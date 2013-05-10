@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
-import com.samteladze.delta.energy_profiler.model.BatteryInfo;
-
 import android.os.Environment;
 
 public class FileManager {
@@ -29,24 +27,24 @@ public class FileManager {
 		}				
 	}
 	
-	public static void WriteBatteryInfo(BatteryInfo batteryInfo, String filePath)
+	public static void SaveObjectToFile(Object obj, String filePath)
 	{
 		File resultsFile = new File(Environment.getExternalStorageDirectory(), filePath);
 		
 		try
 		{
-			// TEST for multiple languages support
+			// Use UTF8 for multiple language support
 			BufferedWriter out = new BufferedWriter
 					(new OutputStreamWriter(new FileOutputStream(resultsFile, true), "UTF8"));
-			out.write(batteryInfo.toString() + "\n");
+			out.write(obj.toString() + "\n");
 			out.flush();
 			out.close();
 			
-			MyLogger.LogInfo(FileManager.class.getSimpleName(), "Battery info was saved to " + filePath);
+			MyLogger.LogInfo(FileManager.class.getSimpleName(), "Object info was saved to " + filePath);
 		} 
 		catch (Exception e)
 		{
-			MyLogger.LogError(FileManager.class.getSimpleName(), "Could not save battery info to " + filePath);
+			MyLogger.LogError(FileManager.class.getSimpleName(), "Could not save object info to " + filePath);
 		}
 	}
 }

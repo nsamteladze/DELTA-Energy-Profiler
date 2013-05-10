@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
 	 
 		  @Override
 		  public void onClick(View v) {
-			  Experimenter.startEnergyExperiment(ExperimentType.values()[(int) spinnerChooseExperiment.getSelectedItemId()],
+			  Experimenter.startExperiment(ExperimentType.values()[(int) spinnerChooseExperiment.getSelectedItemId()],
 					  							 getApplicationContext()); 
 		  }
 	 

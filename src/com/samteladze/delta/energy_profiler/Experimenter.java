@@ -5,8 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.util.Log;
-
 import com.samteladze.delta.energy_profiler.model.ExperimentOptions;
 import com.samteladze.delta.energy_profiler.model.ExperimentType;
 import com.samteladze.delta.energy_profiler.model.IExperimentWithMeasurementService;
@@ -19,32 +17,42 @@ public class Experimenter {
 	// Delay between measurements
 	private static long _timeBetweenMeasurements = 0;
 	
+	private static ExperimentOptions _experimentOptions = null;
+	
 	public static final int ALARM_REQUEST_CODE = 0;
 	
 	// Construct and start energy experiment
-	public static void startEnergyExperiment(ExperimentType experimentType, Context context) {
+	public static void startExperiment(ExperimentType experimentType, Context context) {
+		initialize(experimentType);
 		
-		Log.d("TAG", "Inside experimenter");
-		Log.d("TAG", "Type: " + experimentType);
-		
-		ExperimentOptions experimentOptions = ExperimentOptionsFactory.instantiate(experimentType);
+		startExperimentConditions();
+		startMeasurements();
+
+	}
+	
+	private static void initialize(ExperimentType experimentType) {
+		// Initialize experiment options
+		_experimentOptions = ExperimentOptionsFactory.instantiate(experimentType);
 		
 		// Start a measurement service if the experiment supports it
-		if (experimentOptions instanceof IExperimentWithMeasurementService) {
-			IExperimentWithMeasurementService currentOptions = (IExperimentWithMeasurementService) experimentOptions;
+		if (_experimentOptions instanceof IExperimentWithMeasurementService) {
+			IExperimentWithMeasurementService currentOptions = (IExperimentWithMeasurementService) _experimentOptions;
 			
 			// Initialize number of repetitions and time between measurements
 			_numberOfMeasurementsRemain = currentOptions.getNumberOfMeasurements();
 			_timeBetweenMeasurements = currentOptions.getTimeBetweenMeasurements();
-			
-			// Schedule the first measurement
-			scheduleMeasurement(context);
 		}
 	}
 	
-	public static void scheduleMeasurement(Context context) {	
+	private static void startExperimentConditions() {
 		
-		Log.d("TAG", "Inside measurement scheduling method");
+	}
+	
+	private static void startMeasurements() {
+		
+	}
+	
+	public static void scheduleMeasurement(Context context) {	
 		
 		// Set alarm that will invoke measurements service
  		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
