@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.samteladze.delta.energy_profiler.MainActivity"
+            android:name="com.samteladze.delta.energy_profiler.ExperimentActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,11 @@
         
         <receiver android:name=".OnAlarmReceiver" />
         
-        <service android:name=".MeasurementService" />
+        <service android:name=".IdleExperimentConditionsService" 
+            	 android:label="Idle Conditions" />
+        <service android:name=".TestService" 
+            	 android:label="Test Service" />
+        
     </application>
 
 </manifest>

@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-public class MainActivity extends Activity {
+public class ExperimentActivity extends Activity {
 
 	// TEMP
 	public static Context appContext;
@@ -78,4 +78,5 @@ public class MainActivity extends Activity {
 	 
 		});
 	}
+
 }

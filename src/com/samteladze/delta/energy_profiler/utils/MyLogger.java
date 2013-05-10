@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import android.util.Log;
+
 public class MyLogger {
 	private static Logger _logger = null;
 	
@@ -27,11 +29,15 @@ public class MyLogger {
 	
 	// STUB
 	public static void LogError(String message, String occuredIn) {
-
+		Log.e(occuredIn, message);
 	}
 	
 	// STUB
 	public static void LogInfo(String message, String occuredIn) {
-
+		Log.i(occuredIn, message);
+	}
+	
+	public static void LogDebug(String message, String occuredIn) {
+		Log.d(occuredIn, message);
 	}
 }

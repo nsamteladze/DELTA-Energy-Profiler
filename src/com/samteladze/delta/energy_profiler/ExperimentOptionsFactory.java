@@ -7,8 +7,8 @@ import com.samteladze.delta.energy_profiler.utils.MyLogger;
 
 public class ExperimentOptionsFactory {
 	
-	private final static long TIME_BETWEEN_MEASUREMENTS = 30000;
-	private final static int NUMBER_OF_MEASUREMENTS = 120;
+	private final static long TIME_BETWEEN_MEASUREMENTS = 2000;
+	private final static int NUMBER_OF_MEASUREMENTS = 5;
 	
 	public static ExperimentOptions instantiate(ExperimentType experimentType) {
 		
