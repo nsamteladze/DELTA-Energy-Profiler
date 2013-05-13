@@ -48,10 +48,13 @@ public class FileManager {
 				MyLogger.LogInfo("Created test directory", FileManager.class.getSimpleName());
 			}
 		}	
+		
+		// Clean temp directory
+		cleanTempDir();
 	}
 	
 	// Cleans temp directory defined by PATH_TEMP_DIR
-	// Does not delete temp directory intself
+	// Does not delete temp directory itself
 	public static void cleanTempDir() {
 		File tempDir = new File(Environment.getExternalStorageDirectory(), PATH_TEMP_DIR);
 		
