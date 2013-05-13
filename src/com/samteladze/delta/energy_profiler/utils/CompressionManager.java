@@ -10,7 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class CompressionManager {
-	public static boolean unpackZip(String pathArchive, String pathOutput)
+	public static void unpackZip(String pathArchive, String pathOutput)
 	{    
 		// Need '/' to create a proper combined path for fileOut
         if (!pathOutput.endsWith("/")) {
@@ -55,13 +55,9 @@ public class CompressionManager {
 		
 	         zipInputStream.close();
 	    }
-		
-	     catch(IOException e)
-	     {
-	         e.printStackTrace();
-	         return false;
-	     }
-		
-	     return true;
+	    catch(IOException e)
+	    {
+	    	MyLogger.LogError("Could not decompress " + pathArchive, CompressionManager.class.getSimpleName());
+	    }
 	}
 }

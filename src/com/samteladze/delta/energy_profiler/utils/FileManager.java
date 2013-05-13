@@ -12,9 +12,9 @@ public class FileManager {
 	private static final String PATH_TEMP_DIR = "Delta/EnergyProfiler/temp";
 	private static final String PATH_TEST_DIR = "Delta/EnergyProfiler/test";
 	
-	public static final String FILE_NAME_DEFAULT_RESULTS = "default.csv";
-	public static final String FILE_NAME_PERIODIC_RESULTS = "periodic.csv";
-	public static final String FILE_NAME_STEP_RESULTS = "step.csv";
+	private static final String FILE_NAME_PERIODIC_RESULTS = "periodic.csv";
+	private static final String FILE_NAME_STEP_RESULTS = "step.csv";
+	private static final String FILE_NAME_TEMP = "temp.dat";
 	
 	// Creates all the required directories and files if they don't already exist
 	public static void initialize()
@@ -81,6 +81,7 @@ public class FileManager {
 	    dirToDelete.delete();
 	}
 	
+	// Saves object to file using object.toString()
 	public static void saveObjectToFile(Object obj, String filePath)
 	{
 		File resultsFile = new File(filePath);
@@ -120,6 +121,11 @@ public class FileManager {
 		return (Environment.getExternalStorageDirectory() + "/" + PATH_RESULTS_DIR + "/" + FILE_NAME_STEP_RESULTS);
 	}
 	
+	public static String getTempFileAbsolutePath() {
+		return (Environment.getExternalStorageDirectory() + "/" + PATH_TEMP_DIR + "/" + FILE_NAME_TEMP);
+	}
+	
+	// Deletes results files from the results directory
 	public static void deleteResultsFiles() {
 		if ((new File(getStepResultsAbsolutePath())).delete() &&
 			(new File(getPeriodicResultsAbsolutePath())).delete()) {

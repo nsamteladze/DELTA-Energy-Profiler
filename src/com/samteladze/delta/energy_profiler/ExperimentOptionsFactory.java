@@ -19,6 +19,7 @@ public class ExperimentOptionsFactory {
 	private final static int CPU_NUMBER_OF_MEASUREMENTS = 200;
 	private final static int NET_NUMBER_OF_MEASUREMENTS = 50;
 	private final static String CPU_TEST_ARCHIVE = "test.zip";
+	private final static String NET_DONWLOADED_FILE_URL = "http://www.csee.usf.edu/~nsamteladze/res/resume.pdf";
 	
 	public static ExperimentOptions instantiate(ExperimentType experimentType) {
 		
@@ -31,7 +32,8 @@ public class ExperimentOptionsFactory {
 			return new CPUZipExperimentOptions(experimentType, CPU_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS,  
 					(new File(FileManager.getTestDirAbsolutePath(), CPU_TEST_ARCHIVE)).getAbsolutePath());
 		case Net_4G:
-			return new Net4GExperimentOptions(experimentType, NET_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS);
+			return new Net4GExperimentOptions(experimentType, NET_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS, 
+											  NET_DONWLOADED_FILE_URL);
 		default:
 			MyLogger.LogError("Failed to instantiate experiment options; experiment type was not found", 
 							  ExperimentOptionsFactory.class.toString());
