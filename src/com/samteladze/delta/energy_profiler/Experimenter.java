@@ -110,4 +110,8 @@ public class Experimenter {
 			MyLogger.LogInfo("Set screen back to normal", Experimenter.class.getSimpleName());
 		}
 	}
+	
+	public static ExperimentOptions getExperimentOptions() {
+		return _experimentOptions;
+	}
 }

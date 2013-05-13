@@ -3,11 +3,11 @@ package com.samteladze.delta.energy_profiler;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 
 import com.samteladze.delta.energy_profiler.model.BatteryInfo;
+import com.samteladze.delta.energy_profiler.model.CPUZipExperimentOptions;
 import com.samteladze.delta.energy_profiler.model.IExperimentConditionsService;
 import com.samteladze.delta.energy_profiler.utils.CompressionManager;
 import com.samteladze.delta.energy_profiler.utils.FileManager;
@@ -38,10 +38,13 @@ public class CPUZipExperimentConditionsService extends Service implements IExper
 		BatteryInfo currentBatteryInfo = BatteryInfo.current(getApplicationContext());
 		FileManager.SaveObjectToFile(currentBatteryInfo, FileManager.FILE_NAME_DEFAULT_RESULTS);
 		
+		String pathTestArchive = ((CPUZipExperimentOptions) Experimenter.getExperimentOptions()).getTestArchivePath();
+		
 		while (Experimenter.nextMeasurement()) {
 			MyLogger.LogInfo("Do compression", CPUZipExperimentConditionsService.class.getSimpleName());
 			
-			doCompressionTest(FileManager.PATH_TEMP_DIR);
+			
+			CompressionManager.unpackZip(pathTestArchive, FileManager.PATH_TEMP_DIR);
 			
 			// Get and save battery information
 			currentBatteryInfo = BatteryInfo.current(getApplicationContext());
@@ -73,8 +76,4 @@ public class CPUZipExperimentConditionsService extends Service implements IExper
         super.onDestroy();
     }
 	
-	private void doCompressionTest(String pathOutput) {
-		CompressionManager.unpackZip(Environment.getExternalStorageDirectory().getAbsolutePath() + "/", 
-				Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + pathOutput + "/", "target.zip");
-	}
 }

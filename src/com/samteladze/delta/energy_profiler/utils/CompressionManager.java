@@ -1,6 +1,7 @@
 package com.samteladze.delta.energy_profiler.utils;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,14 +10,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class CompressionManager {
-	public static boolean unpackZip(String pathInput, String pathOutput, String zipname)
+	public static boolean unpackZip(String pathArchive, String pathOutput)
 	{       
 	     InputStream inputStream;
 	     ZipInputStream zipInputStream;
 	     try 
 	     {
 	         String filename;
-	         inputStream = new FileInputStream(pathInput + zipname);
+	         inputStream = new FileInputStream(pathArchive);
 	         zipInputStream = new ZipInputStream(new BufferedInputStream(inputStream));          
 	         ZipEntry zipEntry;
 	         byte[] buffer = new byte[1024];
@@ -25,15 +26,29 @@ public class CompressionManager {
 	         while ((zipEntry = zipInputStream.getNextEntry()) != null) 
 	         {
 	             filename = zipEntry.getName();
-
-	             FileOutputStream fout = new FileOutputStream(pathOutput + filename);
+	             
+	             if (zipEntry.isDirectory()) {
+	                 File dirToCreate = new File(pathOutput + filename);
+	                 dirToCreate.mkdirs();
+	                 continue;
+	              }
+	             
+	             
+	             // Need '/' to create a proper combined path for fileOut
+	             if (pathOutput.endsWith("/")) {
+	            	 pathOutput += "/";
+	             }
+	             /* TODO
+	              * Combine paths in FileManager instead of (pathOutput + filename)
+	              */
+	             FileOutputStream fileOut = new FileOutputStream(pathOutput + filename);
 
 	             while ((count = zipInputStream.read(buffer)) != -1) 
 	             {
-	                 fout.write(buffer, 0, count);             
+	            	 fileOut.write(buffer, 0, count);             
 	             }
 
-	             fout.close();               
+	             fileOut.close();               
 	             zipInputStream.closeEntry();
 	         }
 

@@ -10,15 +10,15 @@ import android.os.Environment;
 public class FileManager {
 	private static final String PATH_RESULTS_DIR = "Delta/EnergyProfiler/results";
 	public static final String PATH_TEMP_DIR = "Delta/EnergyProfiler/temp";
+	private static final String PATH_TEST_DIR = "Delta/EnergyProfiler/test";
 	
 	public static final String FILE_NAME_DEFAULT_RESULTS = "default.csv";
 	
 	// Creates all the required directories and files if they don't already exist
 	public static void initialize()
 	{
-		File resultsDir = new File(Environment.getExternalStorageDirectory(), PATH_RESULTS_DIR);
-
 		// Create results directory
+		File resultsDir = new File(Environment.getExternalStorageDirectory(), PATH_RESULTS_DIR);
 		if (!resultsDir.exists())
 		{
 			if (resultsDir.mkdirs())
@@ -27,14 +27,23 @@ public class FileManager {
 			}
 		}	
 		
-		File tempDir = new File(Environment.getExternalStorageDirectory(), PATH_TEMP_DIR);
-		
 		// Create temp directory
+		File tempDir = new File(Environment.getExternalStorageDirectory(), PATH_TEMP_DIR);
 		if (!tempDir.exists())
 		{
 			if (tempDir.mkdirs())
 			{		        	
 				MyLogger.LogInfo("Created temp directory", FileManager.class.getSimpleName());
+			}
+		}	
+		
+		// Create test directory
+		File testDir = new File(Environment.getExternalStorageDirectory(), PATH_TEST_DIR);
+		if (!testDir.exists())
+		{
+			if (testDir.mkdirs())
+			{		        	
+				MyLogger.LogInfo("Created test directory", FileManager.class.getSimpleName());
 			}
 		}	
 	}
@@ -71,5 +80,9 @@ public class FileManager {
 		{
 			MyLogger.LogError(FileManager.class.getSimpleName(), "Could not save object info to " + filePath);
 		}
+	}
+	
+	public static String getTestDirAbsolutePath() {
+		return (Environment.getExternalStorageDirectory() + "/" + PATH_TEST_DIR);
 	}
 }
