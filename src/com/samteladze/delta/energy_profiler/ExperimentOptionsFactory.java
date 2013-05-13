@@ -18,17 +18,16 @@ public class ExperimentOptionsFactory {
 	private final static int SCREEN_NUMBER_OF_MEASUREMENTS = 180;
 	private final static int CPU_NUMBER_OF_MEASUREMENTS = 180;
 	// For 1 MB file
-	// TEMP Regular = 50
-	private final static int NET_NUMBER_OF_MEASUREMENTS_1 = 5;
+	private final static int NET_NUMBER_OF_MEASUREMENTS_1 = 600;
 	private final static String NET_DONWLOADED_FILE_URL_1 = "http://www.csee.usf.edu/~nsamteladze/res/test_1.dat";
 	// For 5 MB file
 	@SuppressWarnings("unused")
-	private final static int NET_NUMBER_OF_MEASUREMENTS_5 = 30;
+	private final static int NET_NUMBER_OF_MEASUREMENTS_5 = 120;
 	@SuppressWarnings("unused")
 	private final static String NET_DONWLOADED_FILE_URL_5 = "http://www.csee.usf.edu/~nsamteladze/res/test_5.dat";
 	// For 10 MB file
 	@SuppressWarnings("unused")
-	private final static int NET_NUMBER_OF_MEASUREMENTS_10 = 20;
+	private final static int NET_NUMBER_OF_MEASUREMENTS_10 = 60;
 	@SuppressWarnings("unused")
 	private final static String NET_DONWLOADED_FILE_URL_10 = "http://www.csee.usf.edu/~nsamteladze/res/test_10.dat";
 	

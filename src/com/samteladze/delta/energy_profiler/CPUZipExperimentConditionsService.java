@@ -34,12 +34,14 @@ public class CPUZipExperimentConditionsService extends WakefulIntentService impl
 			CompressionManager.unpackZip(pathTestArchive, FileManager.getTempDirAbsolutePath());
 			
 			// Clean the output directory
-			
+			FileManager.cleanTempDir();
 			
 			// Get and save battery information
 			currentBatteryInfo = BatteryInfo.current(getApplicationContext());
 			FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getStepResultsAbsolutePath());
 		}
+		
+		Experimenter.stopExperiment(getApplicationContext());
 		
 		MyLogger.LogInfo("Stopped conditions service - CPU ZIP", CPUZipExperimentConditionsService.class.getSimpleName());
 	}

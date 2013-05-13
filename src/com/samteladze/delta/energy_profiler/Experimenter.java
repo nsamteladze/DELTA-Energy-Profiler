@@ -24,9 +24,7 @@ public class Experimenter {
 	
 	private static Window _activityWindow = null;
 	
-	// Stores the scheduled alarm intent
-	// Is used to cancel the scheduled alarm
-	private static PendingIntent _alarmPendingIntent = null;
+	private static AlarmManager _alarmManager = null;
 	
 	// Is started externally from an ACtivity but us initialized in Experimenter
 	private static IExperimentConditionsService _conditionsService = null;
@@ -34,9 +32,17 @@ public class Experimenter {
 	
 	public static final int ALARM_REQUEST_CODE = 0;
 	
+	// Used to stop external measurements
+	private static boolean _experimentStopFlag = false;
+	
 	// Construct and start energy experiment
 	public static void startExperiment(ExperimentType experimentType, Context context, Window activityWindow) {
 		_activityWindow = activityWindow;
+		// Get alarm manager
+		_alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		
+		// Don't need to stop
+		_experimentStopFlag = false;
 		
 		initialize(experimentType);
 		
@@ -46,18 +52,7 @@ public class Experimenter {
 	
 	public static void stopExperiment(Context context) {
 		stopConditionsService(context);
-		stopMeasurements(context);
-	}
-	
-	private static void stopMeasurements(Context context) {
-		// Cancel the scheduled alarm
-		if (_alarmPendingIntent != null) {
-			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);		
-			alarmManager.cancel(_alarmPendingIntent);
-		}
-		else {
-			MyLogger.LogWarning("Attempted to calncel alarm that was null", Experimenter.class.getSimpleName());
-		}
+		_experimentStopFlag = true;
 	}
 	
 	private static void stopConditionsService(Context context) {
@@ -134,21 +129,17 @@ public class Experimenter {
 	
 	public static void scheduleMeasurement(Context context) {	
 		// Set single alarm 
- 		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+ 		
  		Intent alarmIntent = new Intent(context, OnAlarmReceiver.class);
 		PendingIntent alarmPendingIntent = 
 				PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, alarmIntent, 0);	
- 		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+ 		_alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			  	 SystemClock.elapsedRealtime() + _timeBetweenMeasurements, alarmPendingIntent);
-  
-		// Save the pending intent so it can be used in the future to cancel the alarm
-		_alarmPendingIntent = alarmPendingIntent;
-
 	}
 	
 	// Returns true if more repetitions should be done within the experiment
 	public static boolean nextMeasurement() {
-		if (_numberOfMeasurementsRemain > 0) {
+		if ((_numberOfMeasurementsRemain > 0) && _experimentStopFlag) {
 			--_numberOfMeasurementsRemain;
 			return true;
 		}
