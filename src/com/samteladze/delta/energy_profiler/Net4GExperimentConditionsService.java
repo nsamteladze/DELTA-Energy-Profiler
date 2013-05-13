@@ -27,8 +27,22 @@ public class Net4GExperimentConditionsService extends WakefulIntentService imple
 		
 		// Do data transfer
 		String urlDownloadedFile = ((Net4GExperimentOptions) Experimenter.getExperimentOptions()).getDownloadedFileURL();
-		MyLogger.LogInfo("Start downloading " + urlDownloadedFile, CPUZipExperimentConditionsService.class.getSimpleName());
-		CommunicationManager.downloadFileFromURL(urlDownloadedFile, FileManager.getTempFileAbsolutePath());
+
+		for (int i = 0; i < Experimenter.getExperimentOptions().getNumberOfMeasurements(); ++i) {
+			MyLogger.LogInfo("Downloading " + urlDownloadedFile, CPUZipExperimentConditionsService.class.getSimpleName());
+			
+			// Download the test file
+			CommunicationManager.downloadFileFromURL(urlDownloadedFile, FileManager.getTempFileAbsolutePath());
+			
+			// Clean the output directory
+			FileManager.cleanTempDir();
+			
+			// Get and save battery information
+			currentBatteryInfo = BatteryInfo.current(getApplicationContext());
+			FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getStepResultsAbsolutePath());
+		}
+		
+		Experimenter.stopExperiment(getApplicationContext());
 		
 		MyLogger.LogInfo("Stopped conditions service - NET 4G", CPUZipExperimentConditionsService.class.getSimpleName());
 	}
