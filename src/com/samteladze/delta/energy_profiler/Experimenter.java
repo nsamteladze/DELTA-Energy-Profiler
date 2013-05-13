@@ -24,8 +24,6 @@ public class Experimenter {
 	
 	private static Window _activityWindow = null;
 	
-	private static AlarmManager _alarmManager = null;
-	
 	// Is started externally from an ACtivity but us initialized in Experimenter
 	private static IExperimentConditionsService _conditionsService = null;
 	private static ExperimentOptions _experimentOptions = null;
@@ -38,8 +36,6 @@ public class Experimenter {
 	// Construct and start energy experiment
 	public static void startExperiment(ExperimentType experimentType, Context context, Window activityWindow) {
 		_activityWindow = activityWindow;
-		// Get alarm manager
-		_alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		
 		// Don't need to stop
 		_experimentStopFlag = false;
@@ -129,17 +125,17 @@ public class Experimenter {
 	
 	public static void scheduleMeasurement(Context context) {	
 		// Set single alarm 
- 		
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
  		Intent alarmIntent = new Intent(context, OnAlarmReceiver.class);
 		PendingIntent alarmPendingIntent = 
 				PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, alarmIntent, 0);	
- 		_alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
 			  	 SystemClock.elapsedRealtime() + _timeBetweenMeasurements, alarmPendingIntent);
 	}
 	
 	// Returns true if more repetitions should be done within the experiment
 	public static boolean nextMeasurement() {
-		if ((_numberOfMeasurementsRemain > 0) && _experimentStopFlag) {
+		if ((_numberOfMeasurementsRemain > 0) && !_experimentStopFlag) {
 			--_numberOfMeasurementsRemain;
 			return true;
 		}

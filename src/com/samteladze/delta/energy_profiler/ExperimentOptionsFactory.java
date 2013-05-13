@@ -21,14 +21,10 @@ public class ExperimentOptionsFactory {
 	private final static int NET_NUMBER_OF_MEASUREMENTS_1 = 600;
 	private final static String NET_DONWLOADED_FILE_URL_1 = "http://www.csee.usf.edu/~nsamteladze/res/test_1.dat";
 	// For 5 MB file
-	@SuppressWarnings("unused")
 	private final static int NET_NUMBER_OF_MEASUREMENTS_5 = 120;
-	@SuppressWarnings("unused")
 	private final static String NET_DONWLOADED_FILE_URL_5 = "http://www.csee.usf.edu/~nsamteladze/res/test_5.dat";
 	// For 10 MB file
-	@SuppressWarnings("unused")
 	private final static int NET_NUMBER_OF_MEASUREMENTS_10 = 60;
-	@SuppressWarnings("unused")
 	private final static String NET_DONWLOADED_FILE_URL_10 = "http://www.csee.usf.edu/~nsamteladze/res/test_10.dat";
 	
 	private final static String CPU_TEST_ARCHIVE = "test.zip";
@@ -45,8 +41,8 @@ public class ExperimentOptionsFactory {
 			return new CPUZipExperimentOptions(experimentType, CPU_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS,  
 					(new File(FileManager.getTestDirAbsolutePath(), CPU_TEST_ARCHIVE)).getAbsolutePath());
 		case Net_4G:
-			return new Net4GExperimentOptions(experimentType, NET_NUMBER_OF_MEASUREMENTS_1, TIME_BETWEEN_MEASUREMENTS, 
-											  NET_DONWLOADED_FILE_URL_1);
+			return new Net4GExperimentOptions(experimentType, NET_NUMBER_OF_MEASUREMENTS_5, TIME_BETWEEN_MEASUREMENTS, 
+											  NET_DONWLOADED_FILE_URL_5);
 		default:
 			MyLogger.LogError("Failed to instantiate experiment options; experiment type was not found", 
 							  ExperimentOptionsFactory.class.toString());

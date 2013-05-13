@@ -35,7 +35,7 @@ public class Net4GExperimentConditionsService extends WakefulIntentService imple
 			CommunicationManager.downloadFileFromURL(urlDownloadedFile, FileManager.getTempFileAbsolutePath());
 			
 			// Clean the output directory
-			FileManager.cleanTempDir();
+			// FileManager.cleanTempDir();
 			
 			// Get and save battery information
 			currentBatteryInfo = BatteryInfo.current(getApplicationContext());
