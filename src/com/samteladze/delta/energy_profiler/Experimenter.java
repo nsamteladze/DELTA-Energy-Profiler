@@ -8,10 +8,11 @@ import android.os.SystemClock;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 import com.samteladze.delta.energy_profiler.model.ExperimentOptions;
 import com.samteladze.delta.energy_profiler.model.ExperimentType;
 import com.samteladze.delta.energy_profiler.model.IExperimentConditionsService;
-import com.samteladze.delta.energy_profiler.model.IExperimentWithMeasurementService;
+import com.samteladze.delta.energy_profiler.utils.FileManager;
 import com.samteladze.delta.energy_profiler.utils.MyLogger;
 
 public class Experimenter {
@@ -22,6 +23,10 @@ public class Experimenter {
 	private static long _timeBetweenMeasurements = 0;
 	
 	private static Window _activityWindow = null;
+	
+	// Stores the scheduled alarm intent
+	// Is used to cancel the scheduled alarm
+	private static PendingIntent _alarmPendingIntent = null;
 	
 	// Is started externally from an ACtivity but us initialized in Experimenter
 	private static IExperimentConditionsService _conditionsService = null;
@@ -40,8 +45,44 @@ public class Experimenter {
 	}
 	
 	public static void stopExperiment(Context context) {
+		stopConditionsService(context);
+		stopMeasurements(context);
+	}
+	
+	private static void stopMeasurements(Context context) {
+		// Cancel the scheduled alarm
+		if (_alarmPendingIntent != null) {
+			AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);		
+			alarmManager.cancel(_alarmPendingIntent);
+		}
+		else {
+			MyLogger.LogWarning("Attempted to calncel alarm that was null", Experimenter.class.getSimpleName());
+		}
+	}
+	
+	private static void stopConditionsService(Context context) {
 		if (_conditionsService != null) {
-			context.stopService(new Intent(context, _conditionsService.getClass()));
+			/* TODO 
+			 * Use WakefulIntentService that can't be stopped like that
+			 * Use some other design to do work in background
+			 * Redesign the method
+			 */
+			
+			/* TODO
+			 * Figure out experiment behavior when conditions service stops and
+			 * when all the external measurements are done
+			 * Note: number of external measurements = number of experiment iterations,
+			 * 		 but each iteration takes different time in case of CPU of NET
+			 */
+			if ((_experimentOptions.getExperimentType() == ExperimentType.Idle) || 
+				(_experimentOptions.getExperimentType() == ExperimentType.Screen)) {
+				context.stopService(new Intent(context, _conditionsService.getClass()));
+			}
+			else {
+				MyLogger.LogInfo("End of external measurements. Conditions service was not stopped", 
+								 Experimenter.class.getSimpleName());
+			}
+				 
 		}
 		else {
 			MyLogger.LogError("Failed to stop experiment conditions service", Experimenter.class.getSimpleName());
@@ -51,15 +92,35 @@ public class Experimenter {
 	private static void initialize(ExperimentType experimentType) {
 		// Initialize experiment options
 		_experimentOptions = ExperimentOptionsFactory.instantiate(experimentType);
-		_conditionsService = ExperimentConditionsServiceFactory.instantiate(_experimentOptions.experimentType);
+		_conditionsService = ExperimentConditionsServiceFactory.instantiate(_experimentOptions.getExperimentType());
 		
 		// Initialize number of repetitions and time between measurements
 		_numberOfMeasurementsRemain = _experimentOptions.getNumberOfMeasurements();
+		_timeBetweenMeasurements =  _experimentOptions.getTimeBetweenMeasurements();
+		
+		// Delete old results
+		FileManager.deleteResultsFiles();
 	}
 	
 	private static void startConditionsService(Context context) {
 		if (_conditionsService != null) {
-			context.startService(new Intent(context, _conditionsService.getClass()));
+			/* TODO 
+			 * Use WakefulIntentService for now as a quick solution
+			 * Use some other design to do work in background
+			 * Redesign the object hierarchy accordingly
+			 */
+			if ((_experimentOptions.getExperimentType() == ExperimentType.Idle) || 
+				(_experimentOptions.getExperimentType() == ExperimentType.Screen)) {
+				context.startService(new Intent(context, _conditionsService.getClass()));
+			}
+			else {
+				/* TODO
+				 * Conditions service here will be constructed for the second time
+				 * First time - in using ExperimentConditionsServiceFactory in initialize()
+				 * Service must be constructed only once
+				 */
+				WakefulIntentService.sendWakefulWork(context, _conditionsService.getClass());
+			}
 		}
 		else {
 			MyLogger.LogError("Failed to start experiment conditions service", Experimenter.class.getSimpleName());
@@ -67,14 +128,8 @@ public class Experimenter {
 	}
 	
 	private static void startMeasurements(Context context) {
-		// Start measurements if the experiment supports it
-		if (_experimentOptions instanceof IExperimentWithMeasurementService) {
-			// Initialize time between measurements
-			_timeBetweenMeasurements = ((IExperimentWithMeasurementService) _experimentOptions).getTimeBetweenMeasurements();
-			
-			// Schedule the first measurement
-			scheduleMeasurement(context);
-		}
+		// Schedule the first measurement
+		scheduleMeasurement(context);
 	}
 	
 	public static void scheduleMeasurement(Context context) {	
@@ -82,9 +137,13 @@ public class Experimenter {
  		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
  		Intent alarmIntent = new Intent(context, OnAlarmReceiver.class);
 		PendingIntent alarmPendingIntent = 
-				PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, alarmIntent, 0);		
+				PendingIntent.getBroadcast(context, ALARM_REQUEST_CODE, alarmIntent, 0);	
  		alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					  	 SystemClock.elapsedRealtime() + _timeBetweenMeasurements, alarmPendingIntent);   
+			  	 SystemClock.elapsedRealtime() + _timeBetweenMeasurements, alarmPendingIntent);
+  
+		// Save the pending intent so it can be used in the future to cancel the alarm
+		_alarmPendingIntent = alarmPendingIntent;
+
 	}
 	
 	// Returns true if more repetitions should be done within the experiment

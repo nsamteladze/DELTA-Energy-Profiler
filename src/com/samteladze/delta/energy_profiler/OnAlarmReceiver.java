@@ -17,7 +17,7 @@ public class OnAlarmReceiver extends BroadcastReceiver
 		
 		// Get and save battery information
 		BatteryInfo currentBatteryInfo = BatteryInfo.current(context);
-		FileManager.SaveObjectToFile(currentBatteryInfo, FileManager.FILE_NAME_DEFAULT_RESULTS);
+		FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getPeriodicResultsAbsolutePath());
 		
 		if (Experimenter.nextMeasurement()) {
 			Experimenter.scheduleMeasurement(context);

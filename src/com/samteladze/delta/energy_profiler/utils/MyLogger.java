@@ -40,4 +40,8 @@ public class MyLogger {
 	public static void LogDebug(String message, String occuredIn) {
 		Log.d(occuredIn, message);
 	}
+	
+	public static void LogWarning(String message, String occuredIn) {
+		Log.w(occuredIn, message);
+	}
 }

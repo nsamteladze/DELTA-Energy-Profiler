@@ -14,24 +14,24 @@ import com.samteladze.delta.energy_profiler.utils.MyLogger;
 public class ExperimentOptionsFactory {
 	
 	private final static long TIME_BETWEEN_MEASUREMENTS = 30000;
-	private final static int NUMBER_OF_MEASUREMENTS_IDLE = 200;
-	private final static int NUMBER_OF_MEASUREMENTS_SCREEN = 200;
-	private final static int CPU_NUMBER_OF_MEASUREMENTS = 50;
-	private final static int NUMBER_OF_MEASUREMENTS_NET = 200;
+	private final static int IDLE_NUMBER_OF_MEASUREMENTS = 200;
+	private final static int SCREEN_NUMBER_OF_MEASUREMENTS = 200;
+	private final static int CPU_NUMBER_OF_MEASUREMENTS = 200;
+	private final static int NET_NUMBER_OF_MEASUREMENTS = 50;
 	private final static String CPU_TEST_ARCHIVE = "test.zip";
 	
 	public static ExperimentOptions instantiate(ExperimentType experimentType) {
 		
 		switch (experimentType) {
 		case Idle:
-			return new IdleExperimentOptions(experimentType, TIME_BETWEEN_MEASUREMENTS, NUMBER_OF_MEASUREMENTS_IDLE);
+			return new IdleExperimentOptions(experimentType, IDLE_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS);
 		case Screen:
-			return new ScreenExperimentOptions(experimentType, TIME_BETWEEN_MEASUREMENTS, NUMBER_OF_MEASUREMENTS_SCREEN);
+			return new ScreenExperimentOptions(experimentType, SCREEN_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS);
 		case CPU_Zip:
-			return new CPUZipExperimentOptions(experimentType, CPU_NUMBER_OF_MEASUREMENTS, 
+			return new CPUZipExperimentOptions(experimentType, CPU_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS,  
 					(new File(FileManager.getTestDirAbsolutePath(), CPU_TEST_ARCHIVE)).getAbsolutePath());
 		case Net_4G:
-			return new Net4GExperimentOptions(experimentType, NUMBER_OF_MEASUREMENTS_NET);
+			return new Net4GExperimentOptions(experimentType, NET_NUMBER_OF_MEASUREMENTS, TIME_BETWEEN_MEASUREMENTS);
 		default:
 			MyLogger.LogError("Failed to instantiate experiment options; experiment type was not found", 
 							  ExperimentOptionsFactory.class.toString());

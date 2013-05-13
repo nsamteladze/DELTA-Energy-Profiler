@@ -1,54 +1,39 @@
 package com.samteladze.delta.energy_profiler;
 
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.IBinder;
-import android.os.PowerManager;
+import java.io.File;
 
+import android.content.Intent;
+import com.commonsware.cwac.wakeful.WakefulIntentService;
+import com.samteladze.delta.energy_profiler.model.BatteryInfo;
 import com.samteladze.delta.energy_profiler.model.IExperimentConditionsService;
+import com.samteladze.delta.energy_profiler.utils.CompressionManager;
+import com.samteladze.delta.energy_profiler.utils.FileManager;
 import com.samteladze.delta.energy_profiler.utils.MyLogger;
 
-public class Net4GExperimentConditionsService extends Service implements IExperimentConditionsService {
-
-	private PowerManager.WakeLock wakeLock;
-	
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
+public class Net4GExperimentConditionsService extends WakefulIntentService implements IExperimentConditionsService {
+	public Net4GExperimentConditionsService() {
+		super("Net4GExperimentConditionsService");
+		
+		MyLogger.LogInfo("Created conditions service - NET 4G", Net4GExperimentConditionsService.class.getSimpleName());
+		
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		MyLogger.LogInfo("Started conditions service - Net 4G", Net4GExperimentConditionsService.class.getSimpleName());
-		
-		// Acquire the wake lock
-		PowerManager mgrPower = (PowerManager)getSystemService(Context.POWER_SERVICE);
-		wakeLock = mgrPower.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wake Lock");
-		wakeLock.acquire();
-		
-		MyLogger.LogInfo("Acquired wake lock", Net4GExperimentConditionsService.class.getSimpleName());
-		
-	    return START_STICKY;
-	}
-	
-	@Override
-	public void onCreate(){
-        super.onCreate();
-        
-        MyLogger.LogInfo("Created conditions service - Net 4G", Net4GExperimentConditionsService.class.getSimpleName());
-    }
-	
-	@Override
-    public void onDestroy(){
-		MyLogger.LogInfo("Stopped conditions service - Net 4G", Net4GExperimentConditionsService.class.getSimpleName());
-    	
-    	wakeLock.release();
-    	
-    	MyLogger.LogInfo("Released wake lock", Net4GExperimentConditionsService.class.getSimpleName());
-    	
-        super.onDestroy();
-    }
+	protected void doWakefulWork(Intent intent) {	
+		MyLogger.LogInfo("Started conditions service - NET 4G", Net4GExperimentConditionsService.class.getSimpleName());
 
+		// Get and save initial battery information
+		BatteryInfo currentBatteryInfo = BatteryInfo.current(getApplicationContext());
+		FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getStepResultsAbsolutePath());
+		
+		// TEMP
+		String pathTestArchive = new File(FileManager.getTestDirAbsolutePath(), "test.zip").getAbsolutePath();
+		// Decompress the test archive
+		CompressionManager.unpackZip(pathTestArchive, FileManager.getTempDirAbsolutePath());
+		
+		// Do data transfer
+		
+		
+		MyLogger.LogInfo("Stopped conditions service - NET 4G", CPUZipExperimentConditionsService.class.getSimpleName());
+	}
 }

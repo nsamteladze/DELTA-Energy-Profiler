@@ -1,11 +1,7 @@
 package com.samteladze.delta.energy_profiler;
 
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.os.PowerManager;
-
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 import com.samteladze.delta.energy_profiler.model.BatteryInfo;
 import com.samteladze.delta.energy_profiler.model.CPUZipExperimentOptions;
 import com.samteladze.delta.energy_profiler.model.IExperimentConditionsService;
@@ -13,67 +9,38 @@ import com.samteladze.delta.energy_profiler.utils.CompressionManager;
 import com.samteladze.delta.energy_profiler.utils.FileManager;
 import com.samteladze.delta.energy_profiler.utils.MyLogger;
 
-public class CPUZipExperimentConditionsService extends Service implements IExperimentConditionsService {
-
-	private PowerManager.WakeLock wakeLock;
-	
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
+public class CPUZipExperimentConditionsService extends WakefulIntentService implements IExperimentConditionsService {
+	public CPUZipExperimentConditionsService() {
+		super("CPUZipExperimentConditionsService");
+		
+		MyLogger.LogInfo("Created conditions service - CPU ZIP", CPUZipExperimentConditionsService.class.getSimpleName());
+		
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	protected void doWakefulWork(Intent intent) {	
 		MyLogger.LogInfo("Started conditions service - CPU ZIP", CPUZipExperimentConditionsService.class.getSimpleName());
-		
-		// Acquire the wake lock
-		PowerManager mgrPower = (PowerManager)getSystemService(Context.POWER_SERVICE);
-		wakeLock = mgrPower.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Wake Lock");
-		wakeLock.acquire();
-		
-		MyLogger.LogInfo("Acquired wake lock", CPUZipExperimentConditionsService.class.getSimpleName());
-		
-		// Get and save battery information
+
+		// Get and save initial battery information
 		BatteryInfo currentBatteryInfo = BatteryInfo.current(getApplicationContext());
-		FileManager.SaveObjectToFile(currentBatteryInfo, FileManager.FILE_NAME_DEFAULT_RESULTS);
+		FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getStepResultsAbsolutePath());
 		
 		String pathTestArchive = ((CPUZipExperimentOptions) Experimenter.getExperimentOptions()).getTestArchivePath();
 		
-		while (Experimenter.nextMeasurement()) {
-			MyLogger.LogInfo("Do compression", CPUZipExperimentConditionsService.class.getSimpleName());
+		for (int i = 0; i < Experimenter.getExperimentOptions().getNumberOfMeasurements(); ++i) {
+			MyLogger.LogInfo("Do decompression", CPUZipExperimentConditionsService.class.getSimpleName());
 			
+			// Decompress the test archive
+			CompressionManager.unpackZip(pathTestArchive, FileManager.getTempDirAbsolutePath());
 			
-			CompressionManager.unpackZip(pathTestArchive, FileManager.PATH_TEMP_DIR);
+			// Clean the output directory
+			
 			
 			// Get and save battery information
 			currentBatteryInfo = BatteryInfo.current(getApplicationContext());
-			FileManager.SaveObjectToFile(currentBatteryInfo, FileManager.FILE_NAME_DEFAULT_RESULTS);
+			FileManager.saveObjectToFile(currentBatteryInfo, FileManager.getStepResultsAbsolutePath());
 		}
 		
-		stopSelf();
-		
-	    return START_STICKY;
-	}
-	
-	@Override
-	public void onCreate() {
-        super.onCreate();
-        
-        MyLogger.LogInfo("Created conditions service - CPU ZIP", CPUZipExperimentConditionsService.class.getSimpleName());
-    }
-	
-	@Override
-    public void onDestroy() {
 		MyLogger.LogInfo("Stopped conditions service - CPU ZIP", CPUZipExperimentConditionsService.class.getSimpleName());
-    	
-    	wakeLock.release();
-    	
-    	MyLogger.LogInfo("Released wake lock", CPUZipExperimentConditionsService.class.getSimpleName());
-    	
-    	FileManager.cleanTempDir();
-    	
-        super.onDestroy();
-    }
-	
+	}
 }

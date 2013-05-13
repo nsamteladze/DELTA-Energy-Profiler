@@ -9,10 +9,12 @@ import android.os.Environment;
 
 public class FileManager {
 	private static final String PATH_RESULTS_DIR = "Delta/EnergyProfiler/results";
-	public static final String PATH_TEMP_DIR = "Delta/EnergyProfiler/temp";
+	private static final String PATH_TEMP_DIR = "Delta/EnergyProfiler/temp";
 	private static final String PATH_TEST_DIR = "Delta/EnergyProfiler/test";
 	
 	public static final String FILE_NAME_DEFAULT_RESULTS = "default.csv";
+	public static final String FILE_NAME_PERIODIC_RESULTS = "periodic.csv";
+	public static final String FILE_NAME_STEP_RESULTS = "step.csv";
 	
 	// Creates all the required directories and files if they don't already exist
 	public static void initialize()
@@ -48,22 +50,37 @@ public class FileManager {
 		}	
 	}
 	
+	// Cleans temp directory defined by PATH_TEMP_DIR
+	// Does not delete temp directory intself
 	public static void cleanTempDir() {
 		File tempDir = new File(Environment.getExternalStorageDirectory(), PATH_TEMP_DIR);
 		
 		if (tempDir.exists() && tempDir.isDirectory()) {
-	        String[] children = tempDir.list();
-	        for (int i = 0; i < children.length; i++) {
-	            new File(tempDir, children[i]).delete();
+			for (File subdir : tempDir.listFiles()) {
+	        	deleteDirWithSubdir(subdir);
 	        }
-	        
+			
 	        MyLogger.LogInfo("Cleaned temp directory", FileManager.class.getSimpleName());
 	    }
+		else {
+			MyLogger.LogWarning("Failed to delete temp directory", FileManager.class.getSimpleName());
+		}
+			
 	}
 	
-	public static void SaveObjectToFile(Object obj, String filePath)
+	// Recursively deletes all the files and all the sub directories
+	private static void deleteDirWithSubdir(File dirToDelete) {
+	    if (dirToDelete.isDirectory()) {
+	        for (File subdir : dirToDelete.listFiles()) {
+	        	deleteDirWithSubdir(subdir);
+	        }
+	    }
+	    dirToDelete.delete();
+	}
+	
+	public static void saveObjectToFile(Object obj, String filePath)
 	{
-		File resultsFile = new File(Environment.getExternalStorageDirectory(), filePath);
+		File resultsFile = new File(filePath);
 		
 		try
 		{
@@ -74,15 +91,39 @@ public class FileManager {
 			out.flush();
 			out.close();
 			
-			MyLogger.LogInfo(FileManager.class.getSimpleName(), "Object info was saved to " + filePath);
+			MyLogger.LogInfo("Object info was saved to " + filePath, FileManager.class.getSimpleName());
 		} 
 		catch (Exception e)
 		{
-			MyLogger.LogError(FileManager.class.getSimpleName(), "Could not save object info to " + filePath);
+			MyLogger.LogInfo("Could not save object info to " + filePath, FileManager.class.getSimpleName());
 		}
 	}
 	
 	public static String getTestDirAbsolutePath() {
 		return (Environment.getExternalStorageDirectory() + "/" + PATH_TEST_DIR);
+	}
+	
+	public static String getTempDirAbsolutePath() {
+		return (Environment.getExternalStorageDirectory() + "/" + PATH_TEMP_DIR);
+	}
+	
+	// Periodic results are measured in the alarm receiver every N seconds
+	public static String getPeriodicResultsAbsolutePath() {
+		return (Environment.getExternalStorageDirectory() + "/" + PATH_RESULTS_DIR + "/" + FILE_NAME_PERIODIC_RESULTS);
+	}
+	
+	// Step results are measured in the experiment conditions service after each experiment iteration
+	public static String getStepResultsAbsolutePath() {
+		return (Environment.getExternalStorageDirectory() + "/" + PATH_RESULTS_DIR + "/" + FILE_NAME_STEP_RESULTS);
+	}
+	
+	public static void deleteResultsFiles() {
+		if ((new File(getStepResultsAbsolutePath())).delete() &&
+			(new File(getPeriodicResultsAbsolutePath())).delete()) {
+			MyLogger.LogInfo("Deleted the results files", FileManager.class.getSimpleName());
+		}
+		else {
+			MyLogger.LogWarning("Failed to delete the results files", FileManager.class.getSimpleName());
+		}
 	}
 }
